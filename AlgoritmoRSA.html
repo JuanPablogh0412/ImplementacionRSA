@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RSA Algorithm — Paso a Paso</title>
+<title>Implementación algoritmo RSA</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -36,26 +36,6 @@
     overflow-x: hidden;
   }
 
-  /* ── grid background ── */
-  body::before {
-    content: '';
-    position: fixed; inset: 0; z-index: 0;
-    background-image:
-      linear-gradient(rgba(0,229,160,.025) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,229,160,.025) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-  }
-
-  /* ── glow blob ── */
-  body::after {
-    content: '';
-    position: fixed;
-    top: -20vh; left: -10vw;
-    width: 60vw; height: 60vh;
-    background: radial-gradient(ellipse, rgba(0,229,160,.06) 0%, transparent 70%);
-    pointer-events: none; z-index: 0;
-  }
 
   .app { position: relative; z-index: 1; max-width: 1280px; margin: 0 auto; padding: 0 24px 48px; }
 
@@ -67,27 +47,7 @@
     display: flex; align-items: center; justify-content: space-between;
     gap: 16px; flex-wrap: wrap;
   }
-  .logo { display: flex; align-items: center; gap: 16px; }
-  .logo-hex {
-    width: 52px; height: 52px;
-    background: linear-gradient(135deg, var(--green), var(--cyan));
-    clip-path: polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--mono); font-weight: 700; font-size: 18px; color: #000;
-    flex-shrink: 0;
-    animation: hexPulse 3s ease-in-out infinite;
-  }
-  @keyframes hexPulse {
-    0%,100% { filter: drop-shadow(0 0 8px rgba(0,229,160,.4)); }
-    50%      { filter: drop-shadow(0 0 20px rgba(0,229,160,.8)); }
-  }
-  .logo-text h1 { font-size: 28px; font-weight: 700; color: var(--white); letter-spacing: -0.5px; }
-  .logo-text p  { font-size: 13px; color: var(--gray2); font-family: var(--mono); margin-top: 2px; }
-  .header-badge {
-    font-family: var(--mono); font-size: 11px; color: var(--green);
-    border: 1px solid var(--green2); border-radius: 20px; padding: 4px 14px;
-    background: rgba(0,229,160,.06);
-  }
+  .logo h1 { font-size: 24px; font-weight: 600; color: var(--white); letter-spacing: -0.3px; }
 
   /* ── LAYOUT ── */
   .layout { display: grid; grid-template-columns: 320px 1fr; gap: 20px; align-items: start; }
@@ -103,7 +63,6 @@
   }
   .sidebar-header {
     padding: 16px 20px;
-    background: linear-gradient(90deg, rgba(0,229,160,.08), transparent);
     border-bottom: 1px solid var(--border);
     font-family: var(--mono); font-size: 11px; font-weight: 500;
     color: var(--cyan); letter-spacing: 2px; text-transform: uppercase;
@@ -125,7 +84,7 @@
     display: flex; align-items: center; justify-content: center;
     transition: all .3s; flex-shrink: 0;
   }
-  .step-block.active  .step-num { background: var(--green); color: #000; box-shadow: 0 0 12px rgba(0,229,160,.5); }
+  .step-block.active  .step-num { background: var(--green); color: #000; }
   .step-block.done    .step-num { background: var(--border2); color: var(--green); border: 1px solid var(--green2); }
   .step-title { font-size: 13px; font-weight: 600; color: var(--white); font-family: var(--mono); }
 
@@ -135,10 +94,10 @@
     color: var(--white); font-family: var(--mono); font-size: 16px; font-weight: 500;
     text-align: center; outline: none; transition: all .2s; margin-bottom: 10px;
   }
-  .step-input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(56,189,248,.15); }
+  .step-input:focus { border-color: var(--cyan); }
   .step-input:disabled { opacity: .4; cursor: not-allowed; }
   .step-input.ok    { border-color: var(--green2); }
-  .step-input.error { border-color: var(--red); box-shadow: 0 0 0 3px rgba(248,113,113,.15); }
+  .step-input.error { border-color: var(--red); }
 
   .step-btn {
     width: 100%; padding: 10px;
@@ -149,7 +108,7 @@
   .step-btn.cyan    { background: var(--cyan);    color: #000; }
   .step-btn.yellow  { background: var(--yellow);  color: #000; }
   .step-btn.green   { background: var(--green);   color: #000; }
-  .step-btn:hover:not(:disabled) { filter: brightness(1.15); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,.3); }
+  .step-btn:hover:not(:disabled) { filter: brightness(1.1); }
   .step-btn:disabled { opacity: .35; cursor: not-allowed; transform: none; }
 
   .step-done-badge {
@@ -200,16 +159,10 @@
   }
   .log-header {
     padding: 14px 20px;
-    background: linear-gradient(90deg, rgba(56,189,248,.07), transparent);
     border-bottom: 1px solid var(--border);
     display: flex; align-items: center; justify-content: space-between;
   }
   .log-title { font-family: var(--mono); font-size: 11px; color: var(--cyan); letter-spacing: 2px; text-transform: uppercase; }
-  .log-dots { display: flex; gap: 6px; }
-  .dot { width: 10px; height: 10px; border-radius: 50%; }
-  .dot-r { background: #f87171; }
-  .dot-y { background: #fbbf24; }
-  .dot-g { background: #4ade80; }
 
   #logOutput {
     flex: 1;
@@ -246,21 +199,7 @@
   @keyframes toastIn { from { opacity:0; transform: translateX(-50%) translateY(10px); } }
   #toast.ok { border-color: var(--green); color: var(--green); }
 
-  /* ── GITHUB GUIDE ── */
-  .github-guide {
-    margin-top: 24px;
-    background: var(--panel); border: 1px solid var(--border); border-radius: 16px;
-    padding: 24px;
-  }
-  .github-guide h2 { font-size: 16px; color: var(--cyan); margin-bottom: 16px; font-family: var(--mono); }
-  .guide-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
-  .guide-step {
-    background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px;
-  }
-  .guide-step-num { font-family: var(--mono); font-size: 11px; color: var(--green); margin-bottom: 6px; }
-  .guide-step-title { font-size: 13px; font-weight: 600; color: var(--white); margin-bottom: 4px; }
-  .guide-step-body { font-size: 12px; color: var(--gray2); line-height: 1.5; }
-  .guide-step code { font-family: var(--mono); color: var(--yellow); font-size: 11px; }
+
 </style>
 </head>
 <body>
@@ -269,13 +208,8 @@
   <!-- HEADER -->
   <header>
     <div class="logo">
-      <div class="logo-hex">RSA</div>
-      <div class="logo-text">
-        <h1>RSA Algorithm</h1>
-        <p>Implementación interactiva paso a paso</p>
-      </div>
+      <h1>Implementación algoritmo RSA</h1>
     </div>
-    <div class="header-badge">v2.0 · GitHub Pages Ready</div>
   </header>
 
   <!-- MAIN LAYOUT -->
@@ -342,44 +276,13 @@
     <!-- LOG PANEL -->
     <div class="log-panel">
       <div class="log-header">
-        <div class="log-dots">
-          <div class="dot dot-r"></div>
-          <div class="dot dot-y"></div>
-          <div class="dot dot-g"></div>
-        </div>
         <div class="log-title">Procedimiento</div>
-        <div style="width:54px"></div>
       </div>
       <div id="logOutput"></div>
     </div>
   </div>
 
-  <!-- GITHUB GUIDE -->
-  <div class="github-guide">
-    <h2>// Cómo publicar en GitHub Pages</h2>
-    <div class="guide-steps">
-      <div class="guide-step">
-        <div class="guide-step-num">PASO 01</div>
-        <div class="guide-step-title">Crear repositorio</div>
-        <div class="guide-step-body">En GitHub, crea un repo nuevo. Nómbralo como quieras (ej. <code>rsa-demo</code>).</div>
-      </div>
-      <div class="guide-step">
-        <div class="guide-step-num">PASO 02</div>
-        <div class="guide-step-title">Subir este archivo</div>
-        <div class="guide-step-body">Sube <code>index.html</code> a la raíz del repositorio. Solo este archivo es suficiente.</div>
-      </div>
-      <div class="guide-step">
-        <div class="guide-step-num">PASO 03</div>
-        <div class="guide-step-title">Activar Pages</div>
-        <div class="guide-step-body">Ve a <code>Settings → Pages</code>. En "Source" elige <code>main</code> y <code>/ (root)</code>. Guarda.</div>
-      </div>
-      <div class="guide-step">
-        <div class="guide-step-num">PASO 04</div>
-        <div class="guide-step-title">¡Listo!</div>
-        <div class="guide-step-body">En ~1 minuto tu app estará en <code>tuusuario.github.io/rsa-demo</code>. Compártela con quien quieras.</div>
-      </div>
-    </div>
-  </div>
+
 
 </div>
 
