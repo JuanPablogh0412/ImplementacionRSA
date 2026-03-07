@@ -1,6 +1,4 @@
-# Ignorar todo
 *
 
-# Excepto el HTML
 !*.html
 !.gitignore
