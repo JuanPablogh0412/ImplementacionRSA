@@ -289,9 +289,7 @@
 <div id="toast"></div>
 
 <script>
-// ═══════════════════════════════════════════
-//  MATEMÁTICAS
-// ═══════════════════════════════════════════
+
 
 function esPrimo(n) {
   n = parseInt(n);
@@ -327,15 +325,11 @@ function calcularKTabla(e, phi, limite = e) {
   return { filas, encontrado };
 }
 
-// ═══════════════════════════════════════════
-//  ESTADO
-// ═══════════════════════════════════════════
+
 let P = null, Q = null, N = null, PHI = null,
     E = null, K = null, D = null;
 
-// ═══════════════════════════════════════════
-//  LOG
-// ═══════════════════════════════════════════
+
 
 const logEl = document.getElementById('logOutput');
 
@@ -374,9 +368,7 @@ function logWelcome() {
   logSep();
 }
 
-// ═══════════════════════════════════════════
-//  TOAST
-// ═══════════════════════════════════════════
+
 let toastTimer;
 function toast(msg, ok = false) {
   const t = document.getElementById('toast');
@@ -465,9 +457,7 @@ function setQ() {
   logLine('  Elige un valor de e de la lista anterior.', 'c-gray');
 }
 
-// ═══════════════════════════════════════════
-//  PASO 3 — e → k automático → d
-// ═══════════════════════════════════════════
+
 function setE() {
   const val = parseInt(document.getElementById('inp_e').value);
   const inp  = document.getElementById('inp_e');
